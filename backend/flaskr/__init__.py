@@ -214,8 +214,7 @@ def create_app(test_config=None):
 
               if not Category.query.get(quiz_category):
                   abort(404)
-              get_questions = Question.query.filter(
-                  Question.category == quiz_category,
+              get_questions = Question.query.filter((Question.category).like('%{}%'.format(quiz_category)),
                   Question.id.notin_(prev_qs)).all()
           else:
               get_questions = Question.query.filter(
