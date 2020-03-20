@@ -176,6 +176,22 @@ def create_app(test_config=None):
   category to be shown. 
   '''
 
+  @app.route('/categories/<int:category_id>/questions', methods=['GET'])
+  def get_questions_category(category_id):
+        questions = list(map(Question.format, Question.query.
+                             filter_by(category=category_id).all()))
+
+        category = Category.query.get(category_id)
+        if not category:
+            abort(404)
+
+        result = {
+            "questions": questions,
+            "total_questions": len(questions),
+            "current_category": category_id
+        }
+        return jsonify(result)
+
 
   '''
   @TODO: 
