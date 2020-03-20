@@ -205,11 +205,68 @@ def create_app(test_config=None):
   and shown whether they were correct or not. 
   '''
 
+  @app.route('/quizzes', methods=["POST"])
+  def get_quiz():
+          data = request.get_json()
+          prev_qs = list(data["previous_questions"])
+          quiz_category = int(data["quiz_category"]["id"])
+
+          if quiz_category:
+
+              if not Category.query.get(quiz_category):
+                  abort(404)
+              get_questions = Question.query.filter(
+                  Question.category == quiz_category,
+                  Question.id.notin_(prev_qs)).all()
+          else:
+              get_questions = Question.query.filter(
+                  Question.id.notin_(prev_qs)).all()
+
+          if len(get_questions) == 0:
+              return jsonify(None)
+          else:
+              questions = list(map(Question.format, get_questions))
+              question = random.choice(questions)
+              return jsonify(question)
+
   '''
   @TODO: 
   Create error handlers for all expected errors 
   including 404 and 422. 
   '''
+
+  @app.errorhandler(400)
+  def not_found(error):
+        return jsonify({
+            "success": False,
+            "error": 400,
+            "message": "Bad request."
+        }), 400
+
+  @app.errorhandler(404)
+  def not_found(error):
+        return jsonify({
+            "success": False,
+            "error": 404,
+            "message": "Not found."
+        }), 404
+
+  @app.errorhandler(422)
+  def unprocessable(error):
+        return jsonify({
+            "success": False,
+            "error": 422,
+            "message": "We couldn't process your request."
+        }), 422
+
+  @app.errorhandler(500)
+  def unprocessable(error):
+        return jsonify({
+            "success": False,
+            "error": 500,
+            "message": "Something went wrong."
+        }), 500
+
   
   return app
 
