@@ -3,6 +3,7 @@ from flask import Flask, request, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import random
+from sqlalchemy import func
 
 from models import db, setup_db, Question, Category
 
@@ -126,42 +127,45 @@ def create_app(test_config=None):
   @app.route('/questions', methods=['POST'])
   def new_question():
         data = request.get_json()
-        if not (data["question"] and data["answer"] and data["category"] and data["difficulty"]):
-                abort(422)
-        error = False
-        try:
-            question = Question(
-                question=data["question"],
-                answer=data["answer"],
-                category=data["category"],
-                difficulty=data["difficulty"]
-            )
-            question.insert()
-        except Exception:
-            error = True
-            db.session.rollback()
-            print(exc.info())
-        finally:
-            db.session.close()
-            if error:
-                abort(500)
-            else:
-                result = {
-                  "success": True
-                }
-                return jsonify(result)
+        if "searchTerm" in data:
+            questions = Question.query.filter(
+                func.lower(Question.question).like('%{}%'.format(data["searchTerm"].lower()))
+            ).all()
+            formatted_questions = list(map(Question.format, questions))
+            result = {
+                "questions": formatted_questions,
+                "total_questions": len(formatted_questions),
+                "current_category": None
+            }
+            return jsonify(result)
+        else:
+          if not (data["question"] and data["answer"] and data["category"] and data["difficulty"]):
+                  abort(422)
+          error = False
+          try:
+              question = Question(
+                  question=data["question"],
+                  answer=data["answer"],
+                  category=data["category"],
+                  difficulty=data["difficulty"]
+              )
+              question.insert()
+          except Exception:
+              error = True
+              db.session.rollback()
+              print(exc.info())
+          finally:
+              db.session.close()
+              if error:
+                  abort(500)
+              else:
+                  result = {
+                    "success": True
+                  }
+                  return jsonify(result)
 
 
-  '''
-  @TODO: 
-  Create a POST endpoint to get questions based on a search term. 
-  It should return any questions for whom the search term 
-  is a substring of the question. 
 
-  TEST: Search by any phrase. The questions list will update to include 
-  only question that include that string within their question. 
-  Try using the word "title" to start. 
-  '''
 
   '''
   @TODO: 
