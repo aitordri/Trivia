@@ -42,3 +42,28 @@ The `./frontend` directory contains a complete React frontend to consume the dat
 Pay special attention to what data the frontend is expecting from each API response to help guide how you format your API. 
 
 [View the README.md within ./frontend for more details.](./frontend/README.md)
+
+
+
+## How to run the project
+
+Please follow the following instructions in order to run the project:
+
+Inside the **backend** folder:
+
+* Please add your postgres database path at the flaskr/__init__.py file
+
+```bash
+pip install -r requirements.txt
+psql trivia < trivia.psql
+export FLASK_APP=flaskr
+export FLASK_ENV=development
+flask run
+```
+
+Inside the **frontend** folder:
+
+```bash
+npm install
+npm start
+```
