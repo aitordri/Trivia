@@ -67,3 +67,17 @@ Inside the **frontend** folder:
 npm install
 npm start
 ```
+
+
+
+## API Documentation
+
+| Endpoint                   | Method | Parameters                         | Behavior                                |
+| -------------------------- | ------ | ---------------------------------- | --------------------------------------- |
+| /questions                 | GET    | -                                  | Returns list of questions               |
+| /categories                | GET    | -                                  | Returns list of categories              |
+| /questions/<id>            | DEL    | question_id                        | Deletes a question                      |
+| /questions                 | POST   | -                                  | Creates a new question                  |
+| /categories/<id>/questions | GET    | category_id                        | List of questions from certain category |
+| /quizzes                   | POST   | previous_questions , quiz_category | Gives the question to the user to play. |
+
