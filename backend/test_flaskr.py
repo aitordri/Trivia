@@ -75,7 +75,7 @@ class TriviaTestCase(unittest.TestCase):
         questions_before = Question.query.all()
 
         response = self.client().post('/questions', json=self.demo)
-        
+
         data = json.loads(response.data)
 
         questions_after = Question.query.all()
@@ -83,6 +83,27 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['success'], True)
         self.assertTrue(len(questions_after) - len(questions_before) == 1)
+
+    def test_search_questions(self):
+
+        response = self.client().post('/questions',
+                                      json={'searchTerm': '1990'})
+
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(data['questions']), 1)
+        self.assertEqual(data['questions'][0]['id'], 6)
+
+
+    def test_get_questions_category_error(self):
+
+        response = self.client().get('/categories/50/questions')
+
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(data['success'], False)
 
 
 
